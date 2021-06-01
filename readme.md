@@ -12,7 +12,7 @@ This is where your description should go. Take a look at [contributing.md](contr
 Via Composer
 
 ``` bash
-$ composer require adscom/larapacktrashable
+$ composer require adscomltd/larapack_trashable
 ```
 
 ## Usage
@@ -44,14 +44,14 @@ If you discover any security related issues, please email aamatevosyan@edu.hse.r
 
 MIT. Please see the [license file](license.md) for more information.
 
-[ico-version]: https://img.shields.io/packagist/v/adscom/larapacktrashable.svg?style=flat-square
-[ico-downloads]: https://img.shields.io/packagist/dt/adscom/larapacktrashable.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/adscom/larapacktrashable/master.svg?style=flat-square
+[ico-version]: https://img.shields.io/packagist/v/adscomltd/larapack_trashable.svg?style=flat-square
+[ico-downloads]: https://img.shields.io/packagist/dt/adscomltd/larapack_trashable.svg?style=flat-square
+[ico-travis]: https://img.shields.io/travis/adscomltd/larapack_trashable/master.svg?style=flat-square
 [ico-styleci]: https://styleci.io/repos/12345678/shield
 
-[link-packagist]: https://packagist.org/packages/adscom/larapacktrashable
-[link-downloads]: https://packagist.org/packages/adscom/larapacktrashable
-[link-travis]: https://travis-ci.org/adscom/larapacktrashable
+[link-packagist]: https://packagist.org/packages/adscomltd/larapack_trashable
+[link-downloads]: https://packagist.org/packages/adscomltd/larapack_trashable
+[link-travis]: https://travis-ci.org/adscomltd/larapack_trashable
 [link-styleci]: https://styleci.io/repos/12345678
 [link-author]: https://github.com/adscom
 [link-contributors]: ../../contributors
