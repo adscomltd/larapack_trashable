@@ -1,0 +1,31 @@
+{
+    "name": "adscomltd/larapack_trashable",
+    "description": "Add trash system functionality to Controllers for soft-deletable Eloquent models",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Armen Matevosyan",
+            "email": "aamatevosyan@edu.hse.ru",
+            "homepage": "author homepage"
+        }
+    ],
+    "homepage": "https://github.com/adscomltd/larapack_trashable",
+    "keywords": ["Laravel", "LarapackTrashable"],
+    "require": {
+        "illuminate/support": "~7|~8"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~9.0",
+        "orchestra/testbench": "~5|~6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Adscom\\LarapackTrashable\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Adscom\\LarapackTrashable\\Tests\\": "tests"
+        }
+    }
+}
