@@ -3,42 +3,86 @@
 namespace Adscom\LarapackTrashable\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Str;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 trait HasTrash
 {
     /**
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function restore()
     {
-        $model = $this->getOnlyTrashed();
+        $model = $this->firstOnlyTrashed();
         $model->restore();
 
         return redirect()->back();
     }
 
     /**
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
-    public function forceDelete()
+    public function forceDestroy()
     {
-        $model = $this->getOnlyTrashed();
+        $model = $this->firstOnlyTrashed();
         $model->forceDelete();
 
         return redirect()->back();
     }
 
+    public function batchDestroy()
+    {
+        $data = $this->getBatchActionData()['items'];
+
+        DB::transaction(fn() => $this->getWithoutTrashed($data)
+            ->each(
+                fn($model) => $model->delete()
+            )
+        );
+    }
+
+    public function batchRestore()
+    {
+        $data = $this->getBatchActionData()['items'];
+
+        DB::transaction(fn() => $this->getOnlyTrashed($data)
+            ->each(
+                fn($model) => $model->restore()
+            )
+        );
+    }
+
+    public function batchForceDestroy()
+    {
+        $data = $this->getBatchActionData()['items'];
+
+        DB::transaction(fn() => $this->getOnlyTrashed($data)
+            ->each(
+                fn($model) => $model->forceDelete()
+            )
+        );
+    }
+
     /**
      * @param  null  $value
-     * @return Model
-     * @throws ModelNotFoundException
+     * @return Builder
      */
-    public function getOnlyTrashed($value = null): Model
+    public function getOnlyTrashedBuilder($value = null): Builder
     {
-        return $this->getDefaultBuilder($value)->onlyTrashed()->firstOrFail();
+        return $this->getDefaultBuilder($value)->onlyTrashed();
+    }
+
+    /**
+     * @param  null  $value
+     * @return Collection
+     */
+    public function getOnlyTrashed($value = null): Collection
+    {
+        return $this->getOnlyTrashedBuilder($value)->get();
     }
 
     /**
@@ -46,9 +90,27 @@ trait HasTrash
      * @return Model
      * @throws ModelNotFoundException
      */
-    public function getWithoutTrashed($value = null): Model
+    public function firstOnlyTrashed($value = null): Model
     {
-        return $this->getDefaultBuilder($value)->withoutTrashed()->firstOrFail();
+        return $this->getOnlyTrashedBuilder($value)->firstOrFail();
+    }
+
+    /**
+     * @param  null  $value
+     * @return Builder
+     */
+    public function getWithoutTrashedBuilder($value = null): Builder
+    {
+        return $this->getDefaultBuilder($value)->withoutTrashed();
+    }
+
+    /**
+     * @param  null  $value
+     * @return Collection
+     */
+    public function getWithoutTrashed($value = null): Collection
+    {
+        return $this->getWithoutTrashedBuilder($value)->get();
     }
 
     /**
@@ -56,9 +118,38 @@ trait HasTrash
      * @return Model
      * @throws ModelNotFoundException
      */
-    public function getWithTrashed($value = null): Model
+    public function firstWithoutTrashed($value = null): Model
     {
-        return $this->getDefaultBuilder($value)->withTrashed()->firstOrFail();
+        return $this->getWithoutTrashedBuilder($value)->firstOrFail();
+    }
+
+    /**
+     * @param  null  $value
+     * @return Builder
+     */
+    public function getWithTrashedBuilder($value = null): Builder
+    {
+        return $this->getDefaultBuilder($value)->withTrashed();
+    }
+
+    /**
+     * @param  null  $value
+     * @return Model
+     * @throws ModelNotFoundException
+     */
+    public function getWithTrashed($value = null): Collection
+    {
+        return $this->getWithTrashedBuilder($value)->get();
+    }
+
+    /**
+     * @param  null  $value
+     * @return Model
+     * @throws ModelNotFoundException
+     */
+    public function firstWithTrashed($value = null): Model
+    {
+        return $this->getWithTrashedBuilder($value)->firstOrFail();
     }
 
     /**
@@ -71,7 +162,7 @@ trait HasTrash
             $value = request()->route($this->getModelName());
         }
 
-        return $this->getModelClass()::where($this->getModelKey(), $value);
+        return $this->getModelClass()::whereIn($this->getModelKey(), (array) $value);
     }
 
     /**
@@ -88,5 +179,13 @@ trait HasTrash
     public function getModelKey(): string
     {
         return 'id';
+    }
+
+    public function getBatchActionData(): array
+    {
+        return request()->validate([
+            'items' => 'required|array',
+            'items.*' => 'required|integer|gt:0',
+        ]);
     }
 }
